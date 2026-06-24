@@ -1,0 +1,16 @@
+router.put("/me/role", authMiddleware, async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!role || (role !== "user" && role !== "driver")) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    user.role = role;
+    await user.save();
+    res.json({ message: "Role updated successfully", role: user.role });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
